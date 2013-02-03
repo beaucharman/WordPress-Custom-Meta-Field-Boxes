@@ -1,6 +1,6 @@
 # WordPress Custom Meta Field Boxes
 
-### Usage 
+## Usage 
 
 For each separate custom meta field box (from here referred to as **cmfb**) you would like, simply add a new array to the `$custom_meta_fields_array` variable.
 
@@ -15,7 +15,7 @@ array(
     array(
       'type'        => '',
       'id' 	        => '',
-    	'label'       => '',
+      'label'       => '',
     )
   )  
 )
@@ -36,7 +36,10 @@ What post type this **cmfb** will be attached to, can be 'post', 'page', 'link',
 The physical placement of the **cmfb** within the editor window. Can be either 'normal', 'advanced', or 'side'. Defaults to 'advanced'.
  
 #### Priority
-The ranking of the **cmfb** within the selected context, can be either 'high', 'core', 'default' or 'low'.            
+The ranking of the **cmfb** within the selected context, can be either 'high', 'core', 'default' or 'low'.    
+
+#### Fields
+Add an array for each meta field to be added to the current **cmfb**. All fields require a **type** and **id**.       
 
 For example:
 
@@ -51,8 +54,21 @@ array(
     array(
       'type'        => '',
       'id' 	        => '',
-    	'label'       => '',
+      'label'       => '',
     )
   )  
 )
 ```
+
+## Current **cmfb** types
+
+#### 'text'
+Extra parameters: description & placeholder
+ 
+#### 'textarea'  
+Extra Parameters: description
+
+#### 'post_list'
+Extra Parameters: description & post_type
+Presents a checkbox list of the post types given as a value argument to the post_type key. Can be a Single string or an array of post types.
+
