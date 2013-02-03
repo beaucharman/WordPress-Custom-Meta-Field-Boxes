@@ -1,7 +1,7 @@
 <?php
 /*	
 
-lt3-theme Meta Fields
+  lt3 Custom Meta Field Boxes
 
 ------------------------------------------------
   custom-meta-field-boxes.php 1.0 
