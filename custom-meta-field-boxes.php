@@ -1,177 +1,170 @@
 <?php
 /*	
   
-  lt3-theme Custom Post Types
+  lt3-theme Meta Fields
   
 ------------------------------------------------
-	Version:   1.0
+	Version: 1.0
 	Notes:
+	
+	This file is for the custom meta fields for posts, pages, and custom post types.
+	
+	array(
+    'id'              => '', 
+    'title'           => '',              
+    'post_type'       => '', // 'post', 'page', 'link', 'attachment' or 'custom_post_type'             
+    'context'         => '', // 'normal', 'advanced', or 'side'         
+    'priority'        => '', // 'high', 'core', 'default' or 'low'
+    'fields'          => array(
+      array(
+        'type'        => '',
+        'id' 	        => '',
+      	'label'       => '',
+      )
+    )  
+  )
 
-  For more information about registering Post Types:
-  http://codex.wordpress.org/Function_Reference/register_post_type
-
-  For information about setting up custom columns:
-  http://tareq.wedevs.com/2011/07/add-your-custom-columns-to-wordpress-admin-panel-tables/
-
-  You can also turn the custom post types declarations into a plugin. for more information: http://codex.wordpress.org/Writing_a_Plugin
-  
-  To declare a post type, simply add a custom post type array to the $custom_post_types array variable, with required values of:
-    'slug_singluar' => '',
-    'slug_plural'   => '',
-    'name_singular' => '',
-    'name_plural'   => '',
-  
-  and optional values of:       
-    'description'   => '',
-    'public'        => true,
-    'menu_position' => 20,
-    'menu_icon'     => NULL,
-    'hierarchical'  => true,
-    'supports'      => array(''),
-    'taxonomies'    => array(''),
-    'has_archive'   => true,  
-    'rewrite'       => '' 
 ------------------------------------------------ */
 
 /* 
 
- Declare Post Types
-
+ Delcare the meta boxes
+   
+------------------------------------------------
+Field: All require the following parameters: type, id & label
 ------------------------------------------------ */
-$custom_post_types = array();
+$custom_meta_fields_array = array();
 
-/*
-
-  Register Post Types
-
------------------------------------------------- */
-add_action('init', 'lt3_create_post_types');
-function lt3_create_post_types() 
+add_action('load-post.php', 'create_meta_boxes');
+function create_meta_boxes()
 {
-  global $custom_post_types;
-  foreach($custom_post_types as $custom_post_type)
+  global $custom_meta_fields_array;
+  foreach($custom_meta_fields_array as $cmfb)
   {
-    $labels = array(
-      'name'                => __($custom_post_type['name_plural']),
-      'singular_name'       => __($custom_post_type['name_singular']),
-      'add_new_item'        => __('Add New '. $custom_post_type['name_singular']),
-      'edit_item'           => __('Edit '. $custom_post_type['name_singular']),
-      'new_item'            => __('New '. $custom_post_type['name_singular']),
-      'view_item'           => __('View '. $custom_post_type['name_singular']),
-      'search_items'        => __('Search '. $custom_post_type['name_plural']),
-      'not_found'           => __('No '. $custom_post_type['name_plural'] .' found'),
-      'not_found_in_trash'  => __('No '. $custom_post_type['name_plural'] .' found in Trash')
-    );
-    register_post_type(
-      $custom_post_type['slug_singular'], array(
-        'labels'        => $labels,
-        'description'   => ($custom_post_type['description']) ? $custom_post_type['description'] : '',
-        'public'        => ($custom_post_type['public']) ? $custom_post_type['public'] : true,
-        'menu_position' => ($custom_post_type['menu_position']) ? $custom_post_type['menu_position'] : 20,
-        'menu_icon'     => ($custom_post_type['menu_icon']) ? $custom_post_type['menu_icon'] : NULL,
-        'hierarchical'  => ($custom_post_type['hierarchical']) ? $custom_post_type['hierarchical'] : false,
-        'supports'      => ($custom_post_type['supports']) ? $custom_post_type['supports'] : array('title', 'editor', 'thumbnail'),
-        'taxonomies'    => ($custom_post_type['taxonomies']) ? $custom_post_type['taxonomies'] : array(),
-        'has_archive'   => ($custom_post_type['has_archive']) ? $custom_post_type['has_archive'] : true,
-        'rewrite'       => ($custom_post_type['rewrite']) ? $custom_post_type['rewrite'] : $custom_post_type['name_plural']
-      )
-    );
+    new Meta_box($cmfb);
   }
 }
 
-/* 
-
-  Change Title for post types
-
------------------------------------------------- */
-add_filter('enter_title_here', 'lt3_custom_title_text');
-function lt3_custom_title_text()
+class Meta_box 
 {
-  global $custom_post_types;
-  $screen = get_current_screen();
-  foreach($custom_post_types as $custom_post_type)
+
+  protected $_cmfb;
+  
+	function __construct($cmfb) 
+	{
+		$this->_cmfb = $cmfb;
+		add_action('add_meta_boxes', array( &$this, 'add_new_meta_box'));
+		add_action('save_post', array( &$this, 'save_meta'));
+	}
+	
+  /* Add the Meta Box
+  ------------------------------------------------ */
+  function add_new_meta_box() 
   {
-    if ($custom_post_type['slug_singular'] == $screen->post_type) 
-    {
-      $title = 'Enter '. $custom_post_type['name_singular'] .' Title Here';
-      break;
+    add_meta_box(
+  		($this->_cmfb['id'])        ? $this->_cmfb['id']        : 'custom_meta_field_box',             
+  		($this->_cmfb['title'])     ? $this->_cmfb['title']     : 'Custom Meta Field Box',          
+  		array( &$this, 'show_meta_box'),
+  		($this->_cmfb['post_type']) ? $this->_cmfb['post_type'] : 'post', 
+  		($this->_cmfb['context'])   ? $this->_cmfb['context']   : 'advanced',
+  		($this->_cmfb['priority'])  ? $this->_cmfb['priority']  : 'default'
+    );
+  }
+  
+  /* Show the Meta box
+  ------------------------------------------------ */
+  function show_meta_box() 
+  {
+    global $post;
+    $context = $this->_cmfb['context'];
+    echo '<input type="hidden" name="custom_meta_fields_box_nonce" value="'.wp_create_nonce(basename(__FILE__)).'" />';
+  	echo '<div class="lt3-form-container '. $this->_cmfb['context'] . '">';
+  	if($field['type'] == null)
+  	{
+    	foreach ( $this->_cmfb['fields'] as $field )
+    	{
+        $field_id = '_' . $this->_cmfb['id'] . '_' . $field['id'];
+    		$meta = get_post_meta($post->ID, $field_id, true);
+    		$meta = ($meta) ? $meta : '';
+    		echo '<section class="custom-field-container">';
+    		$label_state = ($field['label'] == null) ? 'empty' : '';
+    		echo '<div class="label-container '. $label_state .'">';
+    		echo ($field['label'] != null) ? '<label for="'.$field_id.'">'.$field['label'].'</label>' : '&nbsp;';
+    		echo '<span class="description">'.$field['description'].'</span></div>';
+    		echo '<div class="input-container">';
+    		switch($field['type']) 
+    		{
+    		
+    		  /* text
+    		  ------------------------------------------------
+        	Extra parameters: description & placeholder
+    			------------------------------------------------ */
+    			case 'text':
+    			  echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$meta.'"><br>';
+    		  break;
+    			
+    			/* textarea
+    			------------------------------------------------
+        	Extra Parameters: description
+    			------------------------------------------------ */
+    			case 'textarea':
+    			  echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$meta.'</textarea><br>';
+    		  break;
+    
+    			/* post_list
+        	------------------------------------------------
+        	Extra Parameters: description & post_type
+        	------------------------------------------------ */
+    			case 'post_list':
+    			  $meta = ($meta) ? $meta : array(); 
+    				$items = get_posts(array (
+    					'post_type'	=> $field['post_type'],
+    					'posts_per_page' => -1
+    				));
+    				echo '<ul>';
+    				foreach($items as $item):
+    				  $is_select = (in_array($item->ID, $meta)) ? ' checked' : '';
+    					echo '<li><input type="checkbox" name="'.$field_id.'['. $item->ID .']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>&nbsp;<label for="'.$field_id.'['. $item->ID .']">'.$item->post_title.'</label></li>';
+    				endforeach;
+    				echo '</ul>';
+    		  break;	
+    		}
+    		echo '</div>';
+    		echo '</section>';
+    	}
+    	echo '</div>';
     }
   }
-  return $title;
-}
-
-/* 
-
-  Custom Columns
-
------------------------------------------------- */
-
-/* Change the columns for the REPLACE
------------------------------------------------- */
-//add_filter('manage_REPLACE_posts_columns', 'change_columns');
-//add_action('manage_REPLACE_posts_custom_column', 'custom_columns', 10, 2);
-function change_columns($cols) 
-{
-  $cols = array(
-    'cb'       => '<input type="checkbox" />',
-    'title'      => __('Title',      'trans'),
-    'department' => __('Department', 'trans')
-  );
-  return $cols;
-}
-
-function custom_columns($column, $post_id) 
-{
-  switch ($column) 
+  
+  /* Save the data
+  ------------------------------------------------ */
+  function save_meta($post_id) 
   {
-    case "title":
-      $title = get_the_title($post_id);
-      echo '<a href="' . get_permalink() . '">' . $title. '</a>';
-      break;
-    case "department":
-      $department = get_post_meta($post_id, 'departments_details_id', true);
-      echo '<a href="' . get_permalink($department) . '">' . get_the_title($department) . '</a>';
-      break;
+    if (!wp_verify_nonce($_POST['custom_meta_fields_box_nonce'], basename(__FILE__)))
+      return $post_id;
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+      return $post_id;
+    if ('page' == $_POST['post_type']) {
+      if (!current_user_can('edit_page', $post_id))
+        return $post_id;
+    } 
+    elseif (!current_user_can('edit_post', $post_id)) 
+    {
+      return $post_id;
+    }
+    foreach ($this->_cmfb['fields'] as $field) 
+    {
+      $field_id = '_' . $this->_cmfb['id'] . '_' . $field['id'];
+      $old = get_post_meta($post_id, $field_id, true);
+      $new = $_POST[$field_id];
+      if ($new && $new != $old) 
+      {
+        update_post_meta($post_id, $field_id, $new);
+      } 
+      elseif ('' == $new && $old) 
+      {
+        delete_post_meta($post_id, $field_id, $old);
+      }
+    }
   }
-}
-
-/* Make these columns sortable
-------------------------------------- */
-//add_filter('manage_edit-services_sortable_columns', 'sortable_columns');
-function sortable_columns() {
-  return array(
-    'title'      => 'title',
-    'department' => 'department'
-  );
-}
-
-
-/*
-
-  Remove Posts from admin area
-
------------------------------------------------- */
-//add_action('admin_menu', 'lt3_remove_menus');
-function lt3_remove_menus() 
-{
-  global $menu;
-  $restricted = array(__('Posts'), __('Comments'));
-  end ($menu);
-  while (prev($menu))
-  {
-    $value = explode(' ',$menu[key($menu)][0]);
-    if(in_array($value[0] != NULL?$value[0]:"" , $restricted)) unset($menu[key($menu)]);
-  }
-}
-
-/*
-
-  Flush permalink rewrite after creating custom post types and taxonomies
-
------------------------------------------------- */
-//add_action('init', 'lt3_post_and_taxonomy_flush_rewrite');
-function lt3_post_and_taxonomy_flush_rewrite() 
-{
-    global $wp_rewrite;
-    $wp_rewrite->flush_rules();
 }
