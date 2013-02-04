@@ -12,6 +12,9 @@
   
   This file is for the custom meta fields for posts, pages, and custom post types.
   
+  Simply add a new array to the $custom_meta_fields_array variable. 
+  Use the following as your key and value pairs:
+  
   array(
     'id'              => '', 
     'title'           => '',              
