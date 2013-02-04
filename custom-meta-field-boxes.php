@@ -83,59 +83,57 @@ class Meta_box
     $context = $this->_cmfb['context'];
     echo '<input type="hidden" name="custom_meta_fields_box_nonce" value="'.wp_create_nonce(basename(__FILE__)).'" />';
     echo '<div class="lt3-form-container '. $this->_cmfb['context'] . '">';
-    if($field['type'] == null)
+    foreach ( $this->_cmfb['fields'] as $field )
     {
-      foreach ( $this->_cmfb['fields'] as $field )
+  
+      $field_id = '_' . $this->_cmfb['id'] . '_' . $field['id'];
+      $meta = get_post_meta($post->ID, $field_id, true);
+      $meta = ($meta) ? $meta : '';
+      echo '<section class="custom-field-container">';
+      $label_state = ($field['label'] == null) ? 'empty' : '';
+      echo '<div class="label-container '. $label_state .'">';
+      echo ($field['label'] != null) ? '<label for="'.$field_id.'">'.$field['label'].'</label>' : '&nbsp;';
+      echo '<span class="description">'.$field['description'].'</span></div>';
+      echo '<div class="input-container">';
+      switch($field['type']) 
       {
-        $field_id = '_' . $this->_cmfb['id'] . '_' . $field['id'];
-        $meta = get_post_meta($post->ID, $field_id, true);
-        $meta = ($meta) ? $meta : '';
-        echo '<section class="custom-field-container">';
-        $label_state = ($field['label'] == null) ? 'empty' : '';
-        echo '<div class="label-container '. $label_state .'">';
-        echo ($field['label'] != null) ? '<label for="'.$field_id.'">'.$field['label'].'</label>' : '&nbsp;';
-        echo '<span class="description">'.$field['description'].'</span></div>';
-        echo '<div class="input-container">';
-        switch($field['type']) 
-        {
+      
+        /* text
+        ------------------------------------------------
+        Extra parameters: description & placeholder
+        ------------------------------------------------ */
+        case 'text':
+          echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$meta.'"><br>';
+        break;
         
-          /* text
-          ------------------------------------------------
-          Extra parameters: description & placeholder
-          ------------------------------------------------ */
-          case 'text':
-            echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$meta.'"><br>';
-          break;
-          
-          /* textarea
-          ------------------------------------------------
-          Extra Parameters: description
-          ------------------------------------------------ */
-          case 'textarea':
-            echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$meta.'</textarea><br>';
-          break;
-          
-          /* post_list
-          ------------------------------------------------
-          Extra Parameters: description & post_type
-          ------------------------------------------------ */
-          case 'post_list':
-            $meta = ($meta) ? $meta : array(); 
-            $items = get_posts(array (
-            'post_type'	=> $field['post_type'],
-            'posts_per_page' => -1
-            ));
-            echo '<ul>';
-            foreach($items as $item):
-            $is_select = (in_array($item->ID, $meta)) ? ' checked' : '';
-            echo '<li><input type="checkbox" name="'.$field_id.'['. $item->ID .']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>&nbsp;<label for="'.$field_id.'['. $item->ID .']">'.$item->post_title.'</label></li>';
-            endforeach;
-            echo '</ul>';
-          break;	
-        }
-        echo '</div>';
-        echo '</section>';
+        /* textarea
+        ------------------------------------------------
+        Extra Parameters: description
+        ------------------------------------------------ */
+        case 'textarea':
+          echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$meta.'</textarea><br>';
+        break;
+        
+        /* post_list
+        ------------------------------------------------
+        Extra Parameters: description & post_type
+        ------------------------------------------------ */
+        case 'post_list':
+          $meta = ($meta) ? $meta : array(); 
+          $items = get_posts(array (
+          'post_type'	=> $field['post_type'],
+          'posts_per_page' => -1
+          ));
+          echo '<ul>';
+          foreach($items as $item):
+          $is_select = (in_array($item->ID, $meta)) ? ' checked' : '';
+          echo '<li><input type="checkbox" name="'.$field_id.'['. $item->ID .']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>&nbsp;<label for="'.$field_id.'['. $item->ID .']">'.$item->post_title.'</label></li>';
+          endforeach;
+          echo '</ul>';
+        break;	
       }
+      echo '</div>';
+      echo '</section>';   
       echo '</div>';
     }
   }
