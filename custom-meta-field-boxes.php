@@ -24,8 +24,8 @@
     'fields'          => array(
       array(
         'type'        => '',
-        'id' 	        => '',
-        'label'       => '',
+        'id'          => '',
+        'label'       => ''
       )
     )  
   )
@@ -57,7 +57,7 @@ class Meta_box
   function __construct($cmfb) 
   {
     $this->_cmfb = $cmfb;
-    add_action('add_custom_meta_field_box', array( &$this, 'add_new_meta_box'));
+    add_action('add_meta_boxes', array( &$this, 'add_custom_meta_field_box'));
     add_action('save_post', array( &$this, 'save_data'));
   }
   
