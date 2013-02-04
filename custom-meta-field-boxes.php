@@ -32,26 +32,27 @@
 
 ------------------------------------------------ */
 
-/* 
-
-  Delcare the meta boxes
-
+/* Delcare the meta boxes
 ------------------------------------------------
 Field: All require the following parameters: type, id & label
 ------------------------------------------------ */
 $custom_meta_fields_array = array();
 
+/* Create each custom meta field box instance
+------------------------------------------------ */
 add_action('load-post.php', 'create_meta_boxes');
 function create_meta_boxes()
 {
   global $custom_meta_fields_array;
   foreach($custom_meta_fields_array as $cmfb)
   {
-    new Meta_box($cmfb);
+    new Custom_Field_Meta_Box($cmfb);
   }
 }
 
-class Meta_box 
+/* Class structure for a custom meta field box
+------------------------------------------------ */
+class Custom_Field_Meta_Box 
 {
   protected $_cmfb;
   function __construct($cmfb) 
@@ -85,7 +86,6 @@ class Meta_box
     echo '<div class="lt3-form-container '. $this->_cmfb['context'] . '">';
     foreach ( $this->_cmfb['fields'] as $field )
     {
-  
       $field_id = '_' . $this->_cmfb['id'] . '_' . $field['id'];
       $meta = get_post_meta($post->ID, $field_id, true);
       $meta = ($meta) ? $meta : '';
@@ -120,22 +120,25 @@ class Meta_box
         ------------------------------------------------ */
         case 'post_list':
           $meta = ($meta) ? $meta : array(); 
-          $items = get_posts(array (
-          'post_type'	=> $field['post_type'],
-          'posts_per_page' => -1
-          ));
+          $items = get_posts(array(
+            'post_type'	=> $field['post_type'], 
+            'posts_per_page' => -1)
+          );
           echo '<ul>';
           foreach($items as $item):
-          $is_select = (in_array($item->ID, $meta)) ? ' checked' : '';
-          echo '<li><input type="checkbox" name="'.$field_id.'['. $item->ID .']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>&nbsp;<label for="'.$field_id.'['. $item->ID .']">'.$item->post_title.'</label></li>';
-          endforeach;
+            $is_select = (in_array($item->ID, $meta)) ? ' checked' : '';
+            echo '<li>';
+            echo '<input type="checkbox" name="'.$field_id.'['. $item->ID .']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>';
+            echo '&nbsp;<label for="'.$field_id.'['. $item->ID .']">'.$item->post_title.'</label>';
+            echo '</li>';
+            endforeach;
           echo '</ul>';
         break;	
       }
       echo '</div>';
-      echo '</section>';   
-      echo '</div>';
+      echo '</section>';
     }
+    echo '</div>';
   }
   
   /* Save the data
