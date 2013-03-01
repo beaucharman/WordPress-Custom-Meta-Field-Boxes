@@ -63,15 +63,19 @@ array(
 ## Current **cmfb** types
 
 **text**
+
 Extra parameters: description & placeholder
  
 **textarea**
+
 Extra Parameters: description
 
 **checkbox** 
+
 Extra Parameters: description
 
 **post_list**
+
 Extra Parameters: description & post_type
 Presents a checkbox list of the post types given as a value argument to the post_type key. Can be a Single string or an array of post types.
 
