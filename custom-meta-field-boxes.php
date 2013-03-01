@@ -104,7 +104,7 @@ class Custom_Field_Meta_Box
         ------------------------------------------------ */
         case 'text':
           echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$meta.'"><br>';
-        break;
+          break;
         
         /* textarea
         ------------------------------------------------
@@ -112,7 +112,15 @@ class Custom_Field_Meta_Box
         ------------------------------------------------ */
         case 'textarea':
           echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$meta.'</textarea><br>';
-        break;
+          break;
+        
+        /* checkbox
+  			------------------------------------------------
+        Extra Parameters: description
+        ------------------------------------------------ */
+				case 'checkbox':
+					echo '<input type="checkbox" name="'.$field_id.'" id="'.$field_id.'" ', $meta ? ' checked' : '','/>';
+				  break;
         
         /* post_list
         ------------------------------------------------
@@ -133,7 +141,7 @@ class Custom_Field_Meta_Box
             echo '</li>';
             endforeach;
           echo '</ul>';
-        break;	
+          break;	
       }
       echo '</div>';
       echo '</section>';
