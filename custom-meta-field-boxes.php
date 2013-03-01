@@ -115,12 +115,12 @@ class Custom_Field_Meta_Box
           break;
         
         /* checkbox
-	      ------------------------------------------------
+        ------------------------------------------------
         Extra Parameters: description
         ------------------------------------------------ */
-	      case 'checkbox':
-	        echo '<input type="checkbox" name="'.$field_id.'" id="'.$field_id.'" ', $meta ? ' checked' : '','/>';
-	        break;
+        case 'checkbox':
+          echo '<input type="checkbox" name="'.$field_id.'" id="'.$field_id.'" ', $meta ? ' checked' : '','/>';
+          break;
         
         /* post_list
         ------------------------------------------------
