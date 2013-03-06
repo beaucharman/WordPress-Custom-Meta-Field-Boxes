@@ -1,25 +1,25 @@
 <?php
-/*	
+/*
 
   lt3 Custom Meta Field Boxes
 
 ------------------------------------------------
-  custom-meta-field-boxes.php 1.0 
+  custom-meta-field-boxes.php 1.0
   Sunday, 3rd February 2013
   Beau Charman | @beaucharman | http://beaucharman.me
   Version: 1.0
   Notes:
-  
+
   This file is for the custom meta fields for posts, pages, and custom post types.
-  
-  Simply add a new array to the $custom_meta_fields_array variable. 
+
+  Simply add a new array to the $custom_meta_fields_array variable.
   Use the following as your key and value pairs:
-  
+
   array(
-    'id'              => '', 
-    'title'           => '',              
-    'post_type'       => '', // 'post', 'page', 'link', 'attachment' a custom post type slug, or array             
-    'context'         => '', // 'normal', 'advanced', or 'side'         
+    'id'              => '',
+    'title'           => '',
+    'post_type'       => '', // 'post', 'page', 'link', 'attachment' a custom post type slug, or array
+    'context'         => '', // 'normal', 'advanced', or 'side'
     'priority'        => '', // 'high', 'core', 'default' or 'low'
     'fields'          => array(
       array(
@@ -27,7 +27,7 @@
         'id'          => '',
         'label'       => ''
       )
-    )  
+    )
   )
 
 ------------------------------------------------ */
@@ -52,33 +52,33 @@ function create_meta_boxes()
 
 /* Class structure for a custom meta field box
 ------------------------------------------------ */
-class Custom_Field_Meta_Box 
+class Custom_Field_Meta_Box
 {
   protected $_cmfb;
-  function __construct($cmfb) 
+  function __construct($cmfb)
   {
     $this->_cmfb = $cmfb;
     add_action('add_meta_boxes', array( &$this, 'add_custom_meta_field_box'));
     add_action('save_post', array( &$this, 'save_data'));
   }
-  
+
   /* Add the Meta Box
   ------------------------------------------------ */
-  function add_custom_meta_field_box() 
+  function add_custom_meta_field_box()
   {
     add_meta_box(
-      ($this->_cmfb['id'])        ? $this->_cmfb['id']        : 'custom_meta_field_box',             
-      ($this->_cmfb['title'])     ? $this->_cmfb['title']     : 'Custom Meta Field Box',          
+      ($this->_cmfb['id'])        ? $this->_cmfb['id']        : 'custom_meta_field_box',
+      ($this->_cmfb['title'])     ? $this->_cmfb['title']     : 'Custom Meta Field Box',
       array( &$this, 'show_custom_meta_field_box'),
-      ($this->_cmfb['post_type']) ? $this->_cmfb['post_type'] : 'post', 
+      ($this->_cmfb['post_type']) ? $this->_cmfb['post_type'] : 'post',
       ($this->_cmfb['context'])   ? $this->_cmfb['context']   : 'advanced',
       ($this->_cmfb['priority'])  ? $this->_cmfb['priority']  : 'default'
     );
   }
-  
+
   /* Show the Meta box
   ------------------------------------------------ */
-  function show_custom_meta_field_box() 
+  function show_custom_meta_field_box()
   {
     global $post;
     $context = $this->_cmfb['context'];
@@ -86,72 +86,156 @@ class Custom_Field_Meta_Box
     echo '<div class="lt3-form-container '. $this->_cmfb['context'] . '">';
     foreach ( $this->_cmfb['fields'] as $field )
     {
+      /* Get the field ID, existing value, and set the label & description */
       $field_id = '_' . $this->_cmfb['id'] . '_' . $field['id'];
-      $meta = get_post_meta($post->ID, $field_id, true);
-      $meta = ($meta) ? $meta : '';
+      $value = get_post_meta($post->ID, $field_id, true);
+      $value = ($value) ? $value : '';
       echo '<section class="custom-field-container">';
       $label_state = ($field['label'] == null) ? 'empty' : '';
-      echo '<div class="label-container '. $label_state .'">';
+      echo '<p class="label-container '. $label_state .'">';
       echo ($field['label'] != null) ? '<label for="'.$field_id.'">'.$field['label'].'</label>' : '&nbsp;';
-      echo '<span class="description">'.$field['description'].'</span></div>';
+      echo ($field['description'] != null) ? '<span class="description">'.$field['description'].'</span>' : '&nbsp;';  echo '</p>';
       echo '<div class="input-container">';
-      switch($field['type']) 
+      /* Render required field */
+      switch($field['type'])
       {
-      
-        /* text
-        ------------------------------------------------
-        Extra parameters: description & placeholder
-        ------------------------------------------------ */
-        case 'text':
-          echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$meta.'"><br>';
-          break;
-        
+
         /* textarea
         ------------------------------------------------
         Extra Parameters: description
         ------------------------------------------------ */
         case 'textarea':
-          echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$meta.'</textarea><br>';
+          echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$value.'</textarea><br>';
           break;
-        
+
         /* checkbox
         ------------------------------------------------
         Extra Parameters: description
         ------------------------------------------------ */
         case 'checkbox':
-          echo '<input type="checkbox" name="'.$field_id.'" id="'.$field_id.'" ', $meta ? ' checked' : '','/>';
+          echo '<input type="checkbox" name="'.$field_id.'" id="'.$field_id.'" ', $value ? ' checked' : '','/>';
           break;
-        
+
         /* post_list
         ------------------------------------------------
         Extra Parameters: description & post_type
         ------------------------------------------------ */
         case 'post_list':
-          $meta = ($meta) ? $meta : array(); 
+          $value = ($value) ? $value : array();
           $items = get_posts(array(
-            'post_type'	=> $field['post_type'], 
+            'post_type'	=> $field['post_type'],
             'posts_per_page' => -1)
           );
           echo '<ul>';
           foreach($items as $item):
-            $is_select = (in_array($item->ID, $meta)) ? ' checked' : '';
+            $is_select = (in_array($item->ID, $value)) ? ' checked' : '';
             echo '<li>';
             echo '<input type="checkbox" name="'.$field_id.'['. $item->ID .']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>';
             echo '&nbsp;<label for="'.$field_id.'['. $item->ID .']">'.$item->post_title.'</label>';
             echo '</li>';
             endforeach;
           echo '</ul>';
-          break;	
+          break;
+
+
+
+
+
+
+
+
+
+        /* file
+        ------------------------------------------------
+        Extra Parameters: description & post_type
+        ------------------------------------------------ */
+        case 'file':
+          echo '<input name="'.$field['id'].'" type="input" placeholder="'.$field['placeholder'].'" class="custom_upload_file" value="'.$value.'" size="45" /><br>
+              <span class="description">'.$field['desc'].'</span><br>
+              <input class="custom_upload_file_button button" type="button" value="Choose File" />
+              <small> <a href="#" class="custom_clear_file_button">Remove File</a></small><br><br>';
+        break;
+
+
+        /*
+        jQuery(function(jQuery) {
+          jQuery('.custom_upload_file_button').click(function() {
+            forfield = jQuery(this).siblings('.custom_upload_file');
+            tb_show('', 'media-upload.php?type=image&TB_iframe=true');
+            window.send_to_editor = function(html) {
+              imgurl = jQuery('img',html).attr('src');
+              classes = jQuery('img', html).attr('class');
+              formfield.val(imgurl);
+              tb_remove();
+            }
+            return false;
+          });
+          jQuery('.custom_clear_file_button').click(function() {
+            jQuery(this).parent().siblings('.custom_upload_file').val('');
+            return false;
+          });
+        });
+        */
+
+        /* image
+        ------------------------------------- */
+        case 'image':
+          $image = get_template_directory_uri().'/library/images/default-image.png';
+          echo '<span class="custom_default_image" style="display:none">'.$image.'</span>';
+          if ($value) { $image = wp_get_attachment_image_src($value, 'medium'); $image = $image[0]; }
+          echo  '<input name="'.$field['id'].'" type="hidden" class="custom_upload_image" value="'.$value.'" />
+                <img src="'.$image.'" class="custom_preview_image" alt="" /><br />
+                  <span class="description">'.$field['desc'].'</span><br>
+                  <input class="custom_upload_image_button button" type="button" value="Choose Image" />
+                  <small> <a href="#" class="custom_clear_image_button">Remove Image</a></small><br><br>';
+        break;
+
+
+        /*
+
+        jQuery(function(jQuery) {
+          jQuery('.custom_upload_image_button').click(function() {
+            formfield = jQuery(this).siblings('.custom_upload_image');
+            preview = jQuery(this).siblings('.custom_preview_image');
+            tb_show('', 'media-upload.php?type=image&TB_iframe=true');
+            window.send_to_editor = function(html) {
+              imgurl = jQuery('img',html).attr('src');
+              classes = jQuery('img', html).attr('class');
+              id = classes.replace(/(.*?)wp-image-/, '');
+              formfield.val(id);
+              preview.attr('src', imgurl);
+              tb_remove();
+            }
+            return false;
+          });
+          jQuery('.custom_clear_image_button').click(function() {
+            var defaultImage = jQuery(this).parent().siblings('.custom_default_image').text();
+            jQuery(this).parent().siblings('.custom_upload_image').val('');
+            jQuery(this).parent().siblings('.custom_preview_image').attr('src', defaultImage);
+            return false;
+          });
+        });
+
+        */
+
+        /* text | default
+        ------------------------------------------------
+        Extra parameters: description & placeholder
+        ------------------------------------------------ */
+        default:
+          echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$value.'"><br>';
+          break;
+
       }
       echo '</div>';
       echo '</section>';
     }
     echo '</div>';
   }
-  
+
   /* Save the data
   ------------------------------------------------ */
-  function save_data($post_id) 
+  function save_data($post_id)
   {
     if (!wp_verify_nonce($_POST['custom_meta_fields_box_nonce'], basename(__FILE__)))
     {
@@ -166,21 +250,21 @@ class Custom_Field_Meta_Box
       {
         return $post_id;
       }
-    } 
-    elseif (!current_user_can('edit_post', $post_id)) 
+    }
+    elseif (!current_user_can('edit_post', $post_id))
     {
       return $post_id;
     }
-    foreach ($this->_cmfb['fields'] as $field) 
+    foreach ($this->_cmfb['fields'] as $field)
     {
       $field_id = '_' . $this->_cmfb['id'] . '_' . $field['id'];
       $old = get_post_meta($post_id, $field_id, true);
       $new = $_POST[$field_id];
-      if ($new && $new != $old) 
+      if ($new && $new != $old)
       {
         update_post_meta($post_id, $field_id, $new);
-      } 
-      elseif ('' == $new && $old) 
+      }
+      elseif ('' == $new && $old)
       {
         delete_post_meta($post_id, $field_id, $old);
       }
