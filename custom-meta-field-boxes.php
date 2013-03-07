@@ -31,12 +31,40 @@
   )
 
 ------------------------------------------------ */
+add_filter( 'post_mime_types', 'modify_post_mime_types' );
+function modify_post_mime_types( $post_mime_types ) {
+
+  $post_mime_types['application/pdf'] = array( __( 'PDFs' ), __( 'Manage PDFs' ), _n_noop( 'PDF <span class="count">(%s)</span>', 'PDFs <span class="count">(%s)</span>' ) );
+  return $post_mime_types;
+}
 
 /* Delcare the meta boxes
 ------------------------------------------------
 Field: All require the following parameters: type, id & label
 ------------------------------------------------ */
-$custom_meta_fields_array = array();
+$custom_meta_fields_array = array(
+
+array(
+    'id'              => 'document_information',
+    'title'           => 'Document Information',
+    'post_type'       => 'page', // 'post', 'page', 'link', 'attachment' a custom post type slug, or array
+    'fields'          => array(
+      array(
+        'id'          => 'file',
+        'description' => 'Please input a path to the document, or browse to the file.',
+        'type'        => 'file',
+        'label'       => 'Document Location'
+      ),
+      array(
+        'id'          => 'checkbox',
+        'description' => 'This is a checkbox.',
+        'type'        => 'checkbox',
+        'label'       => 'Check this?',
+        'options'     => array('yes' => 'YES', 'no' => 'NO')
+      )
+    )
+  )
+);
 
 /* Create each custom meta field box instance
 ------------------------------------------------ */
@@ -93,9 +121,9 @@ class Custom_Field_Meta_Box
       echo '<section class="custom-field-container">';
       $label_state = ($field['label'] == null) ? 'empty' : '';
       echo '<p class="label-container '. $label_state .'">';
-      echo ($field['label'] != null) ? '<label for="'.$field_id.'">'.$field['label'].'</label>' : '&nbsp;';
-      echo ($field['description'] != null) ? '<span class="description">'.$field['description'].'</span>' : '&nbsp;';  echo '</p>';
-      echo '<div class="input-container">';
+      echo ($field['label'] != null) ? '<label for="'.$field_id.'"><strong>'.$field['label'].'</strong></label>' : '&nbsp;'; echo '</p>';
+      echo ($field['description'] != null) ? '<p class="description">'.$field['description'].'</p>' : '&nbsp;';
+      echo '<p class="input-container">';
       /* Render required field */
       switch($field['type'])
       {
@@ -105,7 +133,7 @@ class Custom_Field_Meta_Box
         Extra Parameters: description
         ------------------------------------------------ */
         case 'textarea':
-          echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$value.'</textarea><br>';
+          echo '<textarea name="'.$field_id.'" id="'.$field_id.'">'.$value.'</textarea>';
           break;
 
         /* checkbox
@@ -113,7 +141,9 @@ class Custom_Field_Meta_Box
         Extra Parameters: description
         ------------------------------------------------ */
         case 'checkbox':
-          echo '<input type="checkbox" name="'.$field_id.'" id="'.$field_id.'" ', $value ? ' checked' : '','/>';
+          foreach($field['options'] as $value => $key):
+          echo '<input type="checkbox" name="'.$field_id.'" id="'.$field_id.'" ', $value ? ' checked' : '',' />';
+          endforeach;
           break;
 
         /* post_list
@@ -123,7 +153,7 @@ class Custom_Field_Meta_Box
         case 'post_list':
           $value = ($value) ? $value : array();
           $items = get_posts(array(
-            'post_type'	=> $field['post_type'],
+            'post_type' => $field['post_type'],
             'posts_per_page' => -1)
           );
           echo '<ul>';
@@ -137,97 +167,47 @@ class Custom_Field_Meta_Box
           echo '</ul>';
           break;
 
-
-
-
-
-
-
-
-
         /* file
         ------------------------------------------------
         Extra Parameters: description & post_type
         ------------------------------------------------ */
         case 'file':
-          echo '<input name="'.$field['id'].'" type="input" placeholder="'.$field['placeholder'].'" class="custom_upload_file" value="'.$value.'" size="45" /><br>
-              <span class="description">'.$field['desc'].'</span><br>
-              <input class="custom_upload_file_button button" type="button" value="Choose File" />
-              <small> <a href="#" class="custom_clear_file_button">Remove File</a></small><br><br>';
-        break;
+          echo '<p><input name="'.$field_id.'" type="text" placeholder="'.$field['placeholder'].'" class="custom_upload_file" value="'.$value.'" size="50" />
+                <input class="custom_upload_file_button button" type="button" value="Choose File" />
+                <small> <a href="#" class="custom_clear_file_button">Remove File</a></small></p>';
+            ?>
 
-
-        /*
-        jQuery(function(jQuery) {
-          jQuery('.custom_upload_file_button').click(function() {
-            forfield = jQuery(this).siblings('.custom_upload_file');
-            tb_show('', 'media-upload.php?type=image&TB_iframe=true');
-            window.send_to_editor = function(html) {
-              imgurl = jQuery('img',html).attr('src');
-              classes = jQuery('img', html).attr('class');
-              formfield.val(imgurl);
-              tb_remove();
-            }
-            return false;
-          });
-          jQuery('.custom_clear_file_button').click(function() {
-            jQuery(this).parent().siblings('.custom_upload_file').val('');
-            return false;
-          });
-        });
-        */
-
-        /* image
-        ------------------------------------- */
-        case 'image':
-          $image = get_template_directory_uri().'/library/images/default-image.png';
-          echo '<span class="custom_default_image" style="display:none">'.$image.'</span>';
-          if ($value) { $image = wp_get_attachment_image_src($value, 'medium'); $image = $image[0]; }
-          echo  '<input name="'.$field['id'].'" type="hidden" class="custom_upload_image" value="'.$value.'" />
-                <img src="'.$image.'" class="custom_preview_image" alt="" /><br />
-                  <span class="description">'.$field['desc'].'</span><br>
-                  <input class="custom_upload_image_button button" type="button" value="Choose Image" />
-                  <small> <a href="#" class="custom_clear_image_button">Remove Image</a></small><br><br>';
-        break;
-
-
-        /*
-
-        jQuery(function(jQuery) {
-          jQuery('.custom_upload_image_button').click(function() {
-            formfield = jQuery(this).siblings('.custom_upload_image');
-            preview = jQuery(this).siblings('.custom_preview_image');
-            tb_show('', 'media-upload.php?type=image&TB_iframe=true');
-            window.send_to_editor = function(html) {
-              imgurl = jQuery('img',html).attr('src');
-              classes = jQuery('img', html).attr('class');
-              id = classes.replace(/(.*?)wp-image-/, '');
-              formfield.val(id);
-              preview.attr('src', imgurl);
-              tb_remove();
-            }
-            return false;
-          });
-          jQuery('.custom_clear_image_button').click(function() {
-            var defaultImage = jQuery(this).parent().siblings('.custom_default_image').text();
-            jQuery(this).parent().siblings('.custom_upload_image').val('');
-            jQuery(this).parent().siblings('.custom_preview_image').attr('src', defaultImage);
-            return false;
-          });
-        });
-
-        */
+              <script>
+              jQuery(function($) {
+                $('.custom_upload_file_button').click(function() {
+                  $formField = $(this).siblings('.custom_upload_file');
+                  tb_show('Select a File', 'media-upload.php?type=image&TB_iframe=true');
+                  window.send_to_editor = function($html) {
+                   $fileUrl = $($html).attr('href');
+                   $formField.val($fileUrl);
+                   tb_remove();
+                  };
+                  return false;
+                });
+                $('.custom_clear_file_button').click(function() {
+                  $(this).parent().siblings('.custom_upload_file').val('');
+                  return false;
+                });
+              });
+              </script>
+            <?php
+          break;
 
         /* text | default
         ------------------------------------------------
         Extra parameters: description & placeholder
         ------------------------------------------------ */
         default:
-          echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$value.'"><br>';
+          echo '<input type="text" name="'.$field_id.'" id="'.$field_id.'" placeholder="'.$field['placeholder'].'" value="'.$value.'" size="50">';
           break;
 
       }
-      echo '</div>';
+      echo '</p>';
       echo '</section>';
     }
     echo '</div>';
