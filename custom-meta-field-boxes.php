@@ -12,7 +12,7 @@
 
   This file is for the custom meta fields for posts, pages, and custom post types.
 
-  Simply add a new array to the $custom_meta_fields_array variable.
+  Simply add a new array to the $lt3_custom_meta_fields_array variable.
   Use the following as your key and value pairs:
 
   array(
@@ -31,18 +31,12 @@
   )
 
 ------------------------------------------------ */
-add_filter( 'post_mime_types', 'modify_post_mime_types' );
-function modify_post_mime_types( $post_mime_types ) {
-
-  $post_mime_types['application/pdf'] = array( __( 'PDFs' ), __( 'Manage PDFs' ), _n_noop( 'PDF <span class="count">(%s)</span>', 'PDFs <span class="count">(%s)</span>' ) );
-  return $post_mime_types;
-}
 
 /* Delcare the meta boxes
 ------------------------------------------------
 Field: All require the following parameters: type, id & label
 ------------------------------------------------ */
-$custom_meta_fields_array = array(
+$lt3_custom_meta_fields_array = array(
 
 array(
     'id'              => 'document_information',
@@ -71,8 +65,8 @@ array(
 add_action('load-post.php', 'create_meta_boxes');
 function create_meta_boxes()
 {
-  global $custom_meta_fields_array;
-  foreach($custom_meta_fields_array as $cmfb)
+  global $lt3_custom_meta_fields_array;
+  foreach($lt3_custom_meta_fields_array as $cmfb)
   {
     new Custom_Field_Meta_Box($cmfb);
   }
