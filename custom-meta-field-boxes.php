@@ -4,11 +4,9 @@
   lt3 Custom Meta Field Boxes
 
 ------------------------------------------------
-  custom-meta-field-boxes.php 1.0
+  custom-meta-field-boxes.php 2.0
   Sunday, 3rd February 2013
   Beau Charman | @beaucharman | http://beaucharman.me
-  Version: 1.0
-  Notes:
 
   This file is for the custom meta fields for posts, pages, and custom post types.
 
@@ -32,35 +30,19 @@
 
 ------------------------------------------------ */
 
-/* Delcare the meta boxes
+/*
+
+  Delcare the meta boxes
+
 ------------------------------------------------
 Field: All require the following parameters: type, id & label
 ------------------------------------------------ */
-$lt3_custom_meta_fields_array = array(
+$lt3_custom_meta_fields_array = array();
 
-array(
-    'id'              => 'document_information',
-    'title'           => 'Document Information',
-    'post_type'       => 'page', // 'post', 'page', 'link', 'attachment' a custom post type slug, or array
-    'fields'          => array(
-      array(
-        'id'          => 'file',
-        'description' => 'Please input a path to the document, or browse to the file.',
-        'type'        => 'file',
-        'label'       => 'Document Location'
-      ),
-      array(
-        'id'          => 'checkbox',
-        'description' => 'This is a checkbox.',
-        'type'        => 'checkbox',
-        'label'       => 'Check this?',
-        'options'     => array('yes' => 'YES', 'no' => 'NO')
-      )
-    )
-  )
-);
+/*
 
-/* Create each custom meta field box instance
+  Create each custom meta field box instance
+
 ------------------------------------------------ */
 add_action('load-post.php', 'create_meta_boxes');
 function create_meta_boxes()
@@ -72,7 +54,10 @@ function create_meta_boxes()
   }
 }
 
-/* Class structure for a custom meta field box
+/*
+
+  Class structure for a custom meta field box
+
 ------------------------------------------------ */
 class Custom_Field_Meta_Box
 {
