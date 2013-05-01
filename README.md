@@ -10,7 +10,7 @@ Include `custom-meta-field-boxes.php` in your `functions.php` file.
 
 Declare the various argument arrays to setup the new custom meta field box (from here referred to as **cmfb**):
 
-```
+```php
 $args = array(
   'id'              => '',
   'title'           => '',
@@ -29,7 +29,7 @@ $args = array(
 
 Then create an instance of the LT3_Custom_Meta_Field_Box class:
 
-```
+```php
 new LT3_Custom_Meta_Field_Box( $args );
 ```
 
