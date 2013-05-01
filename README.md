@@ -1,8 +1,14 @@
 # WordPress Custom Meta Field Boxes
 
+For more information about registering meta field boxes http://codex.wordpress.org/Function_Reference/add_meta_box
+
+This class works well with the [WordPress Custom Post Types class](https://github.com/beaucharman/wordpress-custom-post-types). They were made for each other <3.
+
 ### Declaring New Custom Meta Field Boxes
 
-To declare a custom meta field box (from here referred to as **cmfb**), simply create a new instance of the LT3_Custom_Meta_Field_Box class.
+Include `custom-meta-field-boxes.php` in your `functions.php` file.
+
+Declare the various argument arrays to setup the new custom meta field box (from here referred to as **cmfb**):
 
 ```
 $args = array(
@@ -19,10 +25,15 @@ $args = array(
      )
    )
  );
-new LT3_Custom_Field_Meta_Box( $args );
 ```
 
-Key and value pairs can consist of the following:
+Then create a variable (for future reference, but is not required) from an instance of the LT3_Custom_Meta_Field_Box class:
+
+```
+new LT3_Custom_Meta_Field_Box( $args );
+```
+
+For the above arguments, key and value pairs can consist of the following:
 
 **ID**
 
