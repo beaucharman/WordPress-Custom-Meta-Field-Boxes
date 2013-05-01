@@ -1,81 +1,70 @@
 # WordPress Custom Meta Field Boxes
 
-## Usage 
+### Declaring New Custom Meta Field Boxes
 
-For each separate custom meta field box (from here referred to as **cmfb**) you would like, simply add a new array to the `$custom_meta_fields_array` variable.
+To declare a custom meta field box (from here referred to as **cmfb**), simply create a new instance of the LT3_Custom_Meta_Field_Box class.
 
 ```
-array(
-  'id'              => '', 
-  'title'           => '',              
-  'post_type'       => '', 
-  'context'         => '',        
-  'priority'        => '',
+$args = array(
+  'id'              => '',
+  'title'           => '',
+  'post_type'       => '', // 'post', 'page', 'link', 'attachment' a custom post type slug, or array
+  'context'         => '', // 'normal', 'advanced', or 'side'
+  'priority'        => '', // 'high', 'core', 'default' or 'low'
   'fields'          => array(
     array(
       'type'        => '',
-      'id' 	        => '',
-      'label'       => '',
-    )
-  )  
-)
+      'id'          => '',
+      'label'       => ''
+     )
+   )
+ );
+new LT3_Custom_Field_Meta_Box( $args );
 ```
 
 Key and value pairs can consist of the following:
 
-#### ID
+**ID**
+
 The unique identifier for the **cmfb**. Defaults to *custom_meta_field_box*. Any **cmfb** that has the same ID as the one that precedes it, with overwrite that one.
 
-#### Title
+**Title**
+
 The title that you will see on the **cmfb**. Defaults to *Custom Meta Field Box*.
 
-#### Post Type
+**Post Type**
+
 What post type this **cmfb** will be attached to, can be 'post', 'page', 'link', 'attachment', the slug of a custom post type or a combination of these within an array. Defaults to 'post'.
 
-#### Context
+**Context**
+
 The physical placement of the **cmfb** within the editor window. Can be either 'normal', 'advanced', or 'side'. Defaults to 'advanced'.
- 
-#### Priority
-The ranking of the **cmfb** within the selected context, can be either 'high', 'core', 'default' or 'low'.    
 
-#### Fields
-Add an array for each meta field to be added to the current **cmfb**. All fields require a **type** and **id**.       
+**Priority**
 
-For example:
+The ranking of the **cmfb** within the selected context, can be either 'high', 'core', 'default' or 'low'.
 
-```
-array(
-  'id'              => '', 
-  'title'           => '',              
-  'post_type'       => '', 
-  'context'         => '',        
-  'priority'        => '',
-  'fields'          => array(
-    array(
-      'type'        => '',
-      'id' 	        => '',
-      'label'       => '',
-    )
-  )  
-)
-```
+**Fields**
 
-## Current **cmfb** types
+Add an array for each meta field to be added to the current **cmfb**.
+
+### Current **cmfb** types
 
 **text**
 
-Extra parameters: description & placeholder
- 
 **textarea**
 
-Extra Parameters: description
+**checkbox**
 
-**checkbox** 
+**select**
 
-Extra Parameters: description
+**post_select**
 
-**post_list**
+**term_select**
 
-Extra Parameters: description & post_type
-Presents a checkbox list of the post types given as a value argument to the post_type key. Can be a Single string or an array of post types.
+**radio**
+
+**post_checkbox**
+
+**file**
 
