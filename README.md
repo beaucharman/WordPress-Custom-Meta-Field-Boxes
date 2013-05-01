@@ -27,7 +27,7 @@ $args = array(
  );
 ```
 
-Then create a variable (for future reference, but is not required) from an instance of the LT3_Custom_Meta_Field_Box class:
+Then create an instance of the LT3_Custom_Meta_Field_Box class:
 
 ```
 new LT3_Custom_Meta_Field_Box( $args );
