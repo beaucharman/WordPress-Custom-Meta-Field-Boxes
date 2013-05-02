@@ -1,20 +1,20 @@
 <?php
 /**
- * Custom Meta Field Boxes
+ * Custom Meta Field Box
  * ------------------------------------------------------------------------
- * custom-meta-field-boxes.php
+ * custom-meta-field-box.php
  * @version 2.1 | May 1st 2013
  * @author  Beau Charman | @beaucharman | http://beaucharman.me
- * @link    https://github.com/beaucharman/wordpress-custom-meta-field-boxes
+ * @link    https://github.com/beaucharman/wordpress-custom-meta-field-box
  * @license MIT license
  *
  * To declare a custom meta field box, simply create a new instance of the
  * LT3_Custom_Meta_Field_Box class.
  *
  * Configuration guide:
- * https://github.com/beaucharman/wordpress-custom-meta-field-boxes
+ * https://github.com/beaucharman/wordpress-custom-meta-field-box
  *
- * For more information about registering meta field boxes:
+ * For more information about registering custom meta field boxes:
  * http://codex.wordpress.org/Function_Reference/add_meta_box
  */
 
