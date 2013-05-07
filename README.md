@@ -59,7 +59,7 @@ The ranking of the **cmfb** within the selected context, can be either 'high', '
 
 Add an array for each meta field to be added to the current **cmfb**.
 
-### Current **cmfb** types
+### Currently available custom field types
 
 **text**
 
