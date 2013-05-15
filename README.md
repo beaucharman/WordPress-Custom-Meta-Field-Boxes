@@ -1,5 +1,7 @@
 # WordPress Custom Meta Field Boxes
 
+> Quickly add custom meta field boxes to any post type
+
 For more information about registering meta field boxes http://codex.wordpress.org/Function_Reference/add_meta_box.
 
 This class works well with the [WordPress Custom Post Type class](https://github.com/beaucharman/wordpress-custom-post-type). They were made for each other <3.
