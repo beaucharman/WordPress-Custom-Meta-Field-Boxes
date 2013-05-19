@@ -24,9 +24,9 @@ $args = array(
       'type'        => '',
       'id'          => '',
       'label'       => ''
-     )
-   )
- );
+    )
+  )
+);
 ```
 
 Then create an instance of the LT3_Custom_Meta_Field_Box class:
