@@ -79,5 +79,96 @@ Add an array for each meta field to be added to the current **cmfb**.
 
 **post_checkbox**
 
+**image**
+
 **file**
 
+### Constants
+
+Make sure to correctly set these following constants within `custom-meta-fields-box.php`:
+
+```php
+
+define('LT3_DEVELOPMENT_MODE', true);
+define('LT3_FULL_SCRIPTS_PATH', 'script/path'); // for the file and image upload scripts
+define('LT3_FULL_IMAGES_PATH', 'images/path'); // for the image placeholder
+
+```
+
+### Scripts
+
+This class requires the folowing two scripts.
+
+**cmfb-file-upload.js**
+
+```javascript
+
+/**
+ * Custom Meta Field Boxes File Upload
+ * ========================================================================
+ * cmfb-file-upload.js
+ * @license MIT license
+ * ======================================================================== */
+(function ($) {
+  $('.custom_upload_file_button').click(function () {
+    var $formField = $(this).siblings('.custom_upload_file');
+    tb_show('Select a File', 'media-upload.php?type=image&TB_iframe=true');
+    window.send_to_editor = function (html) {
+      var $fileUrl = $(html).attr('href');
+      $formField.val($fileUrl);
+      tb_remove();
+    };
+    return false;
+  });
+  $('.custom_clear_file_button').click(function () {
+    $(this)
+      .parent()
+      .siblings('.custom_upload_file')
+      .val('');
+    return false;
+  });
+}(jQuery));
+
+```
+
+**cmfb-image-upload.js**
+
+```javascript
+
+/**
+ * Custom Meta Field Boxes Image Upload
+ * ========================================================================
+ * cmfb-image-upload.js
+ * @license MIT license
+ * ======================================================================== */
+;(function($) {
+  $('.custom_upload_image_button').click(function () {
+    var imgUrl, classes, id;
+    var formField = $(this).siblings('.custom_upload_image');
+    var preview   = $(this).siblings('.custom_preview_image');
+    tb_show('', 'media-upload.php?type=image&TB_iframe=true');
+    window.send_to_editor = function (html) {
+      imgUrl  = $('img',html).attr('src');
+      classes = $('img', html).attr('class');
+      id      = classes.replace(/(.*?)wp-image-/, '');
+      formField.val(id);
+      preview.attr('src', imgUrl);
+      tb_remove();
+    };
+    return false;
+  });
+  $('.custom_clear_image_button').click(function () {
+    var defaultImage = $(this).parent().siblings('.custom_default_image').val();
+    $(this).parent().siblings('.custom_upload_image').val('');
+    $(this).parent().siblings('.custom_preview_image').attr('src', defaultImage);
+    return false;
+  });
+})(jQuery);
+
+```
+
+#### Change log
+- Added a marker next to each label that contains the fields key within development mode.
+
+#### Depedencies
+- jQuery
