@@ -4,7 +4,7 @@
  * ========================================================================
  * custom-meta-field-box.php
  * @version 2.1 | May 1st 2013
- * @author  Beau Charman | @beaucharman | http://beaucharman.me
+ * @author  Beau Charman | @beaucharman | http://www.beaucharman.me
  * @link    https://github.com/beaucharman/wordpress-custom-meta-field-boxes
  * @license MIT license
  *

@@ -88,11 +88,9 @@ Add an array for each meta field to be added to the current **cmfb**.
 Make sure to correctly set these following constants within `custom-meta-fields-box.php`:
 
 ```php
-
 define('LT3_DEVELOPMENT_MODE', true);
 define('LT3_FULL_SCRIPTS_PATH', 'script/path'); // for the file and image upload scripts
 define('LT3_FULL_IMAGES_PATH', 'images/path'); // for the image placeholder
-
 ```
 
 ### Scripts
@@ -102,7 +100,6 @@ This class requires the folowing two scripts.
 **cmfb-file-upload.js**
 
 ```javascript
-
 /**
  * Custom Meta Field Boxes File Upload
  * ========================================================================
@@ -164,7 +161,6 @@ This class requires the folowing two scripts.
     return false;
   });
 })(jQuery);
-
 ```
 
 #### Change log
