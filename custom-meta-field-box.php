@@ -18,6 +18,9 @@
  * http://codex.wordpress.org/Function_Reference/add_meta_box
  */
 
+/**
+ * Set constant dependancies
+ */
 define('LT3_DEVELOPMENT_MODE', true);
 define('LT3_FULL_SCRIPTS_PATH', 'script/path'); // for the file and image upload scripts
 define('LT3_FULL_IMAGES_PATH', 'images/path'); // for the image placeholder
@@ -44,17 +47,17 @@ class LT3_Custom_Meta_Field_Box
   function __construct($cmfb)
   {
     /* Set class values */
-    $this->cmfb      = $cmfb;
-    $this->id        = $this->uglify_words('_cmfb_'. $this->cmfb['id']);
-    $this->title     = (isset($this->cmfb['title']))
+    $this->cmfb = $cmfb;
+    $this->id = $this->uglify_words('_cmfb_'. $this->cmfb['id']);
+    $this->title = (isset($this->cmfb['title']))
       ? $this->cmfb['title'] : $this->prettify_words($this->cmfb['id']);
     $this->post_type = (isset($this->cmfb['post_type']))
       ? $this->cmfb['post_type'] : 'post';
-    $this->context   = (isset($this->cmfb['context']))
+    $this->context = (isset($this->cmfb['context']))
       ? $this->cmfb['context']   : 'advanced';
-    $this->priority  = (isset($this->cmfb['priority']))
+    $this->priority = (isset($this->cmfb['priority']))
       ? $this->cmfb['priority']  : 'default';
-    $this->fields    = $this->cmfb['fields'];
+    $this->fields = $this->cmfb['fields'];
 
     /* Magic */
     add_action('add_meta_boxes', array(&$this, 'add_custom_meta_field_box'));
@@ -163,8 +166,8 @@ class LT3_Custom_Meta_Field_Box
             echo '<li>';
             echo '  <label for="' . $field_id . '[' . $option . ']">';
             echo '  <input type="checkbox" name="' . $field_id . '[' . $option . ']" id="'
-              . $field_id . '[' . $option . ']" value="' . $option . '" ', isset($value[$option])
-                ? ' checked' : '', ' />';
+              . $field_id . '[' . $option . ']" value="' . $option . '" '
+              , isset($value[$option]) ? ' checked' : '', ' />';
             echo '  &nbsp;' . $label . '</label>';
             echo '</li>';
           endforeach ;
@@ -189,10 +192,10 @@ class LT3_Custom_Meta_Field_Box
             ? $field['args'] : array();
           $args = array_merge(
             array(
-            'orderby'       => 'title',
-            'order'         => 'ASC',
-            'post_type'      => $field['post_type'],
-            'posts_per_page' => -1
+              'orderby'       => 'title',
+              'order'         => 'ASC',
+              'post_type'      => $field['post_type'],
+              'posts_per_page' => -1
             ), $field['args']
          );
           $items = get_posts($args);
@@ -207,7 +210,7 @@ class LT3_Custom_Meta_Field_Box
               echo '<li>';
               echo '  <label for="' . $field_id . '[' . $item->ID . ']">';
               echo '  <input type="checkbox" name="' . $field_id . '[' . $item->ID
-                .']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>';
+                . ']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>';
               echo '  &nbsp;'.$item->post_title . $post_type_label.'</label>';
               echo '</li>';
             endforeach ;
@@ -217,7 +220,7 @@ class LT3_Custom_Meta_Field_Box
           else
           {
             echo 'Sorry, there are currently no '. $this->prettify_words($field['post_type'])
-              .' items to choose from.';
+              . ' items to choose from.';
           }
           break;
 
@@ -301,7 +304,6 @@ class LT3_Custom_Meta_Field_Box
          * @param {string} description | optional
          * ======================================================================== */
         case 'term_select':
-
           $field['args'] = (isset($field['args']) && is_array($field['args']))
             ? $field['args'] : array();
           $args = array_merge(
@@ -376,9 +378,9 @@ class LT3_Custom_Meta_Field_Box
             $image = $image[0];
           }
           echo '<input name="' . $field_id . '" type="hidden" class="custom_upload_image" value="' . $value . '" />'
-          . '<img src="' . $image . '" class="custom_preview_image" alt="no image currently selected" /><br />'
-          . '<input class="custom_upload_image_button button" type="button" value="Choose Image" />'
-          . '<small> <a href="#" class="custom_clear_image_button">Remove Image</a></small>';
+            . '<img src="' . $image . '" class="custom_preview_image" alt="no image currently selected" /><br />'
+            . '<input class="custom_upload_image_button button" type="button" value="Choose Image" />'
+            . '<small> <a href="#" class="custom_clear_image_button">Remove Image</a></small>';
           break;
 
         /**
@@ -541,13 +543,13 @@ class LT3_Custom_Meta_Field_Box
       {
         if ('page' == $_POST['post_type'])
         {
-          if (!current_user_can('edit_page', $post_id))
+          if (! current_user_can('edit_page', $post_id))
           {
             return $post_id;
           }
         }
       }
-      elseif (!current_user_can('edit_post', $post_id))
+      elseif (! current_user_can('edit_post', $post_id))
       {
         return $post_id;
       }
