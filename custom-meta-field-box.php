@@ -3,10 +3,10 @@
  * Custom Meta Field Box
  * ========================================================================
  * custom-meta-field-box.php
- * @version 2.1 | May 1st 2013
- * @author  Beau Charman | @beaucharman | http://www.beaucharman.me
- * @link    https://github.com/beaucharman/wordpress-custom-meta-field-boxes
- * @license MIT license
+ * @version   2.1 | May 1st 2013
+ * @author    Beau Charman | @beaucharman | http://www.beaucharman.me
+ * @link      https://github.com/beaucharman/wordpress-custom-meta-field-boxes
+ * @license   MIT license
  *
  * To declare a custom meta field box, simply create a new instance of the
  * LT3_Custom_Meta_Field_Box class.
@@ -46,7 +46,9 @@ class LT3_Custom_Meta_Field_Box
    * ======================================================================== */
   function __construct($cmfb)
   {
-    /* Set class values */
+    /**
+     * Set class values
+     */
     $this->cmfb = $cmfb;
     $this->id = $this->uglify_words('_cmfb_'. $this->cmfb['id']);
     $this->title = (isset($this->cmfb['title']))
@@ -59,7 +61,9 @@ class LT3_Custom_Meta_Field_Box
       ? $this->cmfb['priority']  : 'default';
     $this->fields = $this->cmfb['fields'];
 
-    /* Magic */
+    /**
+     * Magic
+     */
     add_action('add_meta_boxes', array(&$this, 'add_custom_meta_field_box'));
     add_action('save_post', array(&$this, 'save_data'));
   }
@@ -91,35 +95,48 @@ class LT3_Custom_Meta_Field_Box
     global $post;
     echo '<input type="hidden" name="custom_meta_fields_box_nonce" value="'
       . wp_create_nonce(basename(__FILE__)) . '" />';
+
     echo '<ul class="lt3-form-container ' . $this->context . '">';
 
     foreach ($this->fields as $field)
     {
-      /* Get the field ID */
+      /**
+       * Get the field ID
+       */
       $field_id = $this->get_field_id($this->id, $field['id']);
 
-      /* Get the saved value, if there is one */
+      /**
+       * Get the saved value, if there is one
+       */
       $value = get_post_meta($post->ID, $field_id, true);
       $value = ($value) ? $value : '';
 
-      /* Get the label */
+      /**
+       * Get the label
+       */
       $field_label = (isset($field['label']))
         ? $field['label'] : $this->prettify_words($field['id']);
 
       echo '<li class="custom-field-container">';
 
-      echo '<p class="label-container">';
-      echo '  <label for="' . $field_id . '"><strong>' . $field_label . '</strong></label>';
+      echo '<p class="label-container">'
+        . '  <label for="' . $field_id . '"><strong>' . $field_label . '</strong></label>';
+
+      /**
+       * If within the development environment,
+       * disply the field id for faster development referencing.
+       */
       if (LT3_DEVELOPMENT_MODE)
       {
-        /* Disply the field id for faster development referencing */
         echo ' <span class="description">Field ID: ' . $field_id . '</span>';
       }
       echo '</p>';
 
       echo '<div class="input-container">';
 
-      /* Render required field */
+      /**
+       * Render required field
+       */
       $field['type'] = (isset($field['type'])) ? $field['type'] : '';
 
       switch ($field['type'])
@@ -135,8 +152,8 @@ class LT3_Custom_Meta_Field_Box
          * ======================================================================== */
         case 'text':
           $field_placeholder = (isset($field['placeholder'])) ? $field['placeholder'] : '';
-          echo '<input type="text" name="'.$field_id.'" id="'
-            .$field_id.'" placeholder="'.$field_placeholder.'" value="'.$value.'" size="50">';
+          echo '<input type="text" name="' . $field_id . '" id="'
+            . $field_id . '" placeholder="' . $field_placeholder . '" value="' . $value . '" size="50">';
           break;
 
         /**
@@ -163,13 +180,13 @@ class LT3_Custom_Meta_Field_Box
         case 'checkbox':
           echo '<ul>';
           foreach ($field['options'] as $option => $label):
-            echo '<li>';
-            echo '  <label for="' . $field_id . '[' . $option . ']">';
-            echo '  <input type="checkbox" name="' . $field_id . '[' . $option . ']" id="'
+            echo '<li>'
+              . '  <label for="' . $field_id . '[' . $option . ']">'
+              . '  <input type="checkbox" name="' . $field_id . '[' . $option . ']" id="'
               . $field_id . '[' . $option . ']" value="' . $option . '" '
-              , isset($value[$option]) ? ' checked' : '', ' />';
-            echo '  &nbsp;' . $label . '</label>';
-            echo '</li>';
+              , isset($value[$option]) ? ' checked' : '' , ' />'
+              . '  &nbsp;' . $label . '</label>'
+              . '</li>';
           endforeach ;
           echo '</ul>';
           break;
@@ -192,8 +209,8 @@ class LT3_Custom_Meta_Field_Box
             ? $field['args'] : array();
           $args = array_merge(
             array(
-              'orderby'       => 'title',
-              'order'         => 'ASC',
+              'orderby'        => 'title',
+              'order'          => 'ASC',
               'post_type'      => $field['post_type'],
               'posts_per_page' => -1
             ), $field['args']
@@ -207,19 +224,19 @@ class LT3_Custom_Meta_Field_Box
               $is_select = (in_array($item->ID, $value)) ? ' checked' : '';
               $post_type_label = (isset($field['post_type'][1]) && is_array($field['post_type']))
                 ? ' <small>(' . $item->post_type . ')</small>' : '';
-              echo '<li>';
-              echo '  <label for="' . $field_id . '[' . $item->ID . ']">';
-              echo '  <input type="checkbox" name="' . $field_id . '[' . $item->ID
-                . ']" id="'.$field_id.'['. $item->ID .']" value="'.$item->ID.'" '. $is_select .'>';
-              echo '  &nbsp;'.$item->post_title . $post_type_label.'</label>';
-              echo '</li>';
-            endforeach ;
+              echo '<li>'
+                . '  <label for="' . $field_id . '[' . $item->ID . ']">'
+                . '  <input type="checkbox" name="' . $field_id . '[' . $item->ID
+                . ']" id="' . $field_id . '[' . $item->ID . ']" value="' . $item->ID . '" ' . $is_select . '>'
+                . '  &nbsp;' . $item->post_title . $post_type_label . '</label>'
+                . '</li>';
+            endforeach;
             echo '</ul>';
             echo '<p><small>Manage ' . $this->get_edit_links($field['post_type']) . '</p></small>';
           }
           else
           {
-            echo 'Sorry, there are currently no '. $this->prettify_words($field['post_type'])
+            echo 'Sorry, there are currently no ' . $this->prettify_words($field['post_type'])
               . ' items to choose from.';
           }
           break;
@@ -262,8 +279,8 @@ class LT3_Custom_Meta_Field_Box
             ? $field['args'] : array();
           $args = array_merge(
             array(
-              'orderby'       => 'title',
-              'order'         => 'ASC',
+              'orderby'        => 'title',
+              'order'          => 'ASC',
               'post_type'      => $field['post_type'],
               'posts_per_page' => -1
             ), $field['args']
